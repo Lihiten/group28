@@ -9,6 +9,11 @@ workshop_registrations = db["workshop_registrations"]
 
 workshop_details = Blueprint('workshop_details', __name__, template_folder='templates', static_folder='static')
 
+@workshop_details.route('/workshop_details/<type>')
+def workshop_details_page(type):
+    return render_template('workshop_details.html', type=type)
+
+
 @workshop_details.route('/register_workshop', methods=['POST'])
 def register_workshop():
     if "user" not in session:
