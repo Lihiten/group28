@@ -1,5 +1,6 @@
-from flask import Blueprint, request, redirect, url_for, render_template, flash
+from flask import Blueprint, request, redirect, url_for, render_template, flash, session
 from pymongo import MongoClient
+from werkzeug.security import check_password_hash
 from part3.settings import MONGO_URI, DATABASE_NAME
 
 # התחברות למסד נתונים
@@ -22,10 +23,13 @@ def login():
             flash("User does not exist! Please sign up.", "error")
             return redirect(url_for('login.login'))
 
-        if user["password"] != password:
+        # שימוש ב-check_password_hash כדי לבדוק את ההתאמה
+        if not check_password_hash(user["password"], password):
             flash("Incorrect password!", "error")
             return redirect(url_for('login.login'))
 
+        # שמירת המשתמש בסשן
+        session["user"] = user["email"]
         flash("Login successful!", "success")
         return redirect(url_for('index.homepage'))
 
