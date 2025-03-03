@@ -1,31 +1,4 @@
-{#
-Base page variables:
--- page_lang | default: 'en'
--- page_head_title_author | default: 'Barak Pinchovski'
--- page_head_title | default: 'Flask skeleton project'
-#}
 
-{#
-Base page blocks:
-- head
--- page_head
--- page_head_meta
---- page_head_meta_extra
--- page_head_css
-
-- body
--- page_body_content
---- page_body_header
----- page_body_header_content
------ page_body_header_content__main_menu
------- page_body_header_content__main_menu_content
-------- page_body_header_content__main_menu_content_links
---- page_body_main
----- page_body_main_content
---- page_body_footer
----- page_body_footer_content
--- page_body_js
- #}
 <!DOCTYPE html>
  <html lang="{{ page_lang|default("en", true) }}">
     <head>
