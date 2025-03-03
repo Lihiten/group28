@@ -1,6 +1,8 @@
 @import "variables.css";
 
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
 body {
     margin: 0;
@@ -9,12 +11,47 @@ body {
 
 a[href] {
     color: var(--link-color);
+    text-decoration: none; /* מסיר קו תחתון */
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
+/* צבע לאחר ביקור */
 a[href]:visited {
     color: var(--visited-link-color);
 }
 
+/* צבע בעת לחיצה */
 a[href]:active {
     color: var(--active-link-color);
+}
+
+/* עיצוב של תפריט הניווט */
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li {
+    display: inline-block;
+}
+
+nav ul li a {
+    background-color: var(--button-bg-color, #a44a14);
+    color: var(--button-text-color, white);
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+nav ul li a:hover {
+    background-color: var(--button-hover-color, #d65b1f);
+    transform: scale(1.05);
 }

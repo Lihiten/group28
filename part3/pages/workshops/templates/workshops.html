@@ -21,6 +21,9 @@
                 <li><a href="{{ url_for('signup.signup') }}">Sign Up</a></li>
                 <li><a href="{{ url_for('login.login') }}">Login</a></li>
                 <li><a href="{{ url_for('contact.contact') }}">Contact</a></li>
+                {% if session['user'] %}
+                     <a href="{{ url_for('logout.logout') }}">Logout</a>
+                {% endif %}
             </ul>
         </nav>
     </header>

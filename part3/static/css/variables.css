@@ -14,4 +14,9 @@
     --link-color: var(--secondary-color);
     --active-link-color: var(--primary-color);
     --visited-link-color: var(--secondary-color);
+
+    /* Buttons */
+    --button-bg-color: var(--primary-color);
+    --button-hover-color: #4a90e2; /* גוון כהה יותר לכפתור בהובר */
+    --button-text-color: var(--primary-contrast-color);
 }

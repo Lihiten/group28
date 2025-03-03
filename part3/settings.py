@@ -2,29 +2,25 @@ import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
-# Load environment variables from .env file
+# טוען משתני סביבה מקובץ .env
 load_dotenv()
 
-# Secret key for Flask sessions
-SECRET_KEY = os.environ.get('SECRET_KEY', 'my_secret_key')
+# Flask secret key (לשנות לערך מאובטח!)
+SECRET_KEY = os.getenv('SECRET_KEY', 'my_secret_key')
 
-# Database configuration from .env
-DB = {
-    'host': os.environ.get('DB_HOST'),
-    'user': os.environ.get('DB_USER'),
-    'password': os.environ.get('DB_PASSWORD'),
-    'database': os.environ.get('DB_NAME')
-}
+# קבלת נתונים מ- `.env`
+MONGO_USER = os.getenv("MONGO_USER")
+MONGO_PASS = os.getenv("MONGO_PASS")
+MONGO_HOST = os.getenv("MONGO_HOST")
+DATABASE_NAME = os.getenv("DATABASE_NAME")
 
-# MongoDB connection
-MONGO_URI = "mongodb+srv://lihiten:Lihi123ten99@cluster0.t7874.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-DATABASE_NAME = "web_project"  # Database name
-COLLECTION_NAME = "customers"  # Example collection name
+# יצירת ה-URI עם שם משתמש וסיסמה באופן דינמי
+MONGO_URI = f"mongodb+srv://{MONGO_USER}:{MONGO_PASS}@{MONGO_HOST}/?retryWrites=true&w=majority"
 
-# Connect to MongoDB
+# חיבור למסד הנתונים
 client = MongoClient(MONGO_URI)
-db = client[DATABASE_NAME]  # Select the database
+db = client[DATABASE_NAME]  # בחירת מסד הנתונים
 
-# Ensure workshop_registrations collection exists
+# בדיקה אם קיימת קולקציה ל- `workshop_registrations`, אם לא - יוצרת אותה
 if "workshop_registrations" not in db.list_collection_names():
     db.create_collection("workshop_registrations")
