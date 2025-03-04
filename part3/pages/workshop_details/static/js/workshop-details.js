@@ -1,9 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
+    console.log("✅ JavaScript Loaded!");
+
     // Get the workshop type from the URL
     const pathSegments = window.location.pathname.split("/");
     const type = pathSegments[pathSegments.length - 1];
 
-    console.log("📢 Workshop Type:", type);
+    console.log("📢 Detected Workshop Type:", type);
 
     // Workshop details
     const workshops = {
@@ -19,35 +21,18 @@ document.addEventListener("DOMContentLoaded", function () {
             menu: ["Sushi Rolls", "Ramen Noodles", "Stir-Fried Vegetables", "Miso Soup"],
             times: ["7:30 PM", "8:30 PM", "9:30 PM"]
         },
-        mexican: {
-            title: "Mexican Fiesta Workshop",
-            description: "Spice things up with tacos, enchiladas, and fresh guacamole!",
-            menu: ["Tacos", "Enchiladas", "Fresh Guacamole", "Churros"],
-            times: ["7:30 PM", "8:30 PM", "9:30 PM"]
-        },
-        vegan: {
-            title: "Vegan Specialties Workshop",
-            description: "Cook delicious plant-based burgers, salads, and desserts.",
-            menu: ["Vegan Burgers", "Quinoa Salad", "Vegan Brownies", "Smoothie Bowls"],
-            times: ["7:30 PM", "8:30 PM", "9:30 PM"]
-        },
-        meat: {
-            title: "Meat Mastery Workshop",
-            description: "Perfect your grilling skills with BBQ ribs, steak, and roast chicken.",
-            menu: ["BBQ Ribs", "Steak", "Roast Chicken", "Pulled Pork"],
-            times: ["7:30 PM", "8:30 PM", "9:30 PM"]
-        },
-        indian: {
-            title: "Indian Cuisine Workshop",
-            description: "Discover the flavors of curry, naan, and sweet Gulab Jamun.",
-            menu: ["Butter Chicken", "Naan Bread", "Vegetable Curry", "Gulab Jamun"],
-            times: ["7:30 PM", "8:30 PM", "9:30 PM"]
-        }
     };
 
     // Find the selected workshop
     const workshop = workshops[type];
     const detailsContainer = document.getElementById("workshop-details");
+
+    if (!detailsContainer) {
+        console.error("❌ Workshop details container NOT FOUND!");
+        return;
+    }
+
+    console.log("✅ Workshop details container FOUND!");
 
     if (workshop) {
         detailsContainer.innerHTML = `
@@ -76,22 +61,11 @@ document.addEventListener("DOMContentLoaded", function () {
             </section>
         `;
 
-        // Restrict date selection (today and two months ahead)
+        // Restrict date selection
         const dateInput = document.getElementById("date");
         if (dateInput) {
-            const today = new Date();
-            const minDate = today.toISOString().split("T")[0];
-            dateInput.setAttribute("min", minDate);
-
-            const maxDate = new Date();
-            maxDate.setMonth(maxDate.getMonth() + 2);
-            const maxDateStr = maxDate.toISOString().split("T")[0];
-            dateInput.setAttribute("max", maxDateStr);
-        }
-
-        // Update available times when a date is selected
-        if (dateInput) {
-            dateInput.addEventListener("change", updateTimeOptions);
+            const today = new Date().toISOString().split("T")[0];
+            dateInput.setAttribute("min", today);
         }
 
         // Handle form submission
@@ -102,33 +76,31 @@ document.addEventListener("DOMContentLoaded", function () {
             const time = document.getElementById("time").value;
             const participants = document.getElementById("participants").value;
 
-            checkAvailability(workshop.title, date, time, participants);
+            checkLoginStatus(() => {
+                registerWorkshop(workshop.title, date, time, participants);
+            });
         });
     } else {
         detailsContainer.innerHTML = `<h1>Workshop not found</h1>`;
     }
 });
 
-// Function to check if the workshop is fully booked
-function checkAvailability(workshop, date, time, participants) {
-   fetch("/workshop_details/check_availability", {  // שימי לב להוספה של '/workshop_details'
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ workshop, date, time })
-})
-
-    .then(response => response.json())
-    .then(data => {
-        if (!data.available) {
-            alert(data.message);
-        } else {
-            registerWorkshop(workshop, date, time, participants);
-        }
-    })
-    .catch(error => console.error("Error:", error));
+// Check if user is logged in before registration
+function checkLoginStatus(callback) {
+    fetch("/auth/check_login_status")
+        .then(response => response.json())
+        .then(data => {
+            if (!data.logged_in) {
+                alert("You must be logged in to register for a workshop!");
+                window.location.href = "/login/login";
+            } else {
+                callback();
+            }
+        })
+        .catch(error => console.error("Error:", error));
 }
 
-// Function to register for the workshop
+// Register for the workshop
 function registerWorkshop(workshop, date, time, participants) {
     fetch("/workshop_details/register_workshop", {
         method: "POST",
@@ -146,60 +118,16 @@ function registerWorkshop(workshop, date, time, participants) {
     .catch(error => console.error("Error:", error));
 }
 
-// Function to update available time slots based on full bookings
-function updateTimeOptions() {
-    const timeSelect = document.getElementById("time");
-    const date = document.getElementById("date").value;
-    const workshop = document.querySelector(".workshop-header h1").textContent;
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("✅ JavaScript Loaded, Waiting for Register Button Click...");
 
-    if (!date) return;
+    const registerButton = document.querySelector(".button");
+    if (!registerButton) {
+        console.error("❌ Register button not found!");
+        return;
+    }
 
-   fetch("/workshop_details/get_fully_booked_times", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ workshop, date })
-    })
-    .then(response => response.json())
-    .then(data => {
-        Array.from(timeSelect.options).forEach(option => {
-            option.disabled = data.fullyBooked.includes(option.value);
-            option.style.color = option.disabled ? "gray" : "black";
-        });
-    })
-    .catch(error => console.error("Error:", error));
-}
-
-// בדיקה אם המשתמש מחובר לפני הרשמה
-function checkLoginStatus(callback) {
-    fetch("/auth/check_login_status")
-        .then(response => response.json())
-        .then(data => {
-            if (!data.logged_in) {
-                alert("You must be logged in to register for a workshop!");
-                window.location.href = "/login/login"; // מפנה להתחברות
-            } else {
-                callback(data.user);
-            }
-        })
-        .catch(error => console.error("Error:", error));
-}
-
-// פונקציה להרשמה לסדנא
-function registerWorkshop(workshop, date, time, participants) {
-    checkLoginStatus(function(userEmail) {
-        fetch("/workshop_details/register_workshop", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ workshop, date, time, participants, user_email: userEmail })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                window.location.href = `/summary?workshop=${encodeURIComponent(workshop)}&date=${date}&time=${time}&participants=${data.participants}`;
-            } else {
-                alert(data.message);
-            }
-        })
-        .catch(error => console.error("Error:", error));
+    registerButton.addEventListener("click", function () {
+        console.log("🚀 Register Button Clicked!");
     });
-}
+});

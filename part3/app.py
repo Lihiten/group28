@@ -27,6 +27,7 @@ app.register_blueprint(contact_bp, url_prefix='/contact')
 from part3.pages.login.login import login_bp
 app.register_blueprint(login_bp, url_prefix="/login")
 
+
 ## הרשמה
 from part3.pages.signup.signup import signup_bp
 app.register_blueprint(signup_bp, url_prefix="/signup")

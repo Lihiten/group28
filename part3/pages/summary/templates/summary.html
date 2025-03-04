@@ -29,40 +29,26 @@
 
     <!-- Main Content -->
     <main>
-        <h1>Your first step to become a chef is done!</h1>
+    <h1>Your first step to becoming a chef is done!</h1>
     <section id="summary-details" class="summary-section">
-        <p><strong>Full Name:</strong> {{ name }}</p>
-        <p><strong>Email:</strong> {{ email }}</p>
-        <p><strong>Age:</strong> {{ age }}</p>
-        <p><strong>Phone Number:</strong> {{ phone }}</p>
+        <p><strong>Workshop:</strong> <span id="workshop"></span></p>
+        <p><strong>Date:</strong> <span id="date"></span></p>
+        <p><strong>Time:</strong> <span id="time"></span></p>
+        <p><strong>Number of Participants:</strong> <span id="participants"></span></p>
     </section>
-    </main>
+</main>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 Cook Master. All rights reserved.</p>
-    </footer>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const params = new URLSearchParams(window.location.search);
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const params = new URLSearchParams(window.location.search);
+        document.getElementById("workshop").textContent = params.get("workshop") || "No workshop selected";
+        document.getElementById("date").textContent = params.get("date") || "No date selected";
+        document.getElementById("time").textContent = params.get("time") || "No time selected";
+        document.getElementById("participants").textContent = params.get("participants") || "No participants specified";
+    });
+</script>
 
-            // קבלת הנתונים מה-URL
-            const workshop = params.get("workshop");
-            const date = params.get("date");
-            const time = params.get("time");
-            const participants = params.get("participants");
-
-            // הצגת הנתונים בעמוד
-            const summarySection = document.getElementById("summary-details");
-            summarySection.innerHTML = `
-                <p><strong>Workshop:</strong> ${workshop}</p>
-                <p><strong>Date:</strong> ${date}</p>
-                <p><strong>Time:</strong> ${time}</p>
-                <p><strong>Number of Participants:</strong> ${participants}</p>
-            `;
-        });
-    </script>
  <!-- חיבור קובץ ה-JavaScript -->
         <script src="{{ url_for('summary.static', filename='js/summary.js') }}"></script>
 

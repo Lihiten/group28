@@ -30,7 +30,6 @@ def register_workshop():
         return jsonify({"error": "Missing required fields"}), 400
 
     user = customers_collection.find_one({"email": user_email})
-
     if not user:
         return jsonify({"success": False, "message": "User not found."}), 403
 
@@ -59,4 +58,4 @@ def register_workshop():
         })
         updated_participants = participants
 
-    return jsonify({"success": True, "participants": updated_participants})
+    return jsonify({"success": True, "participants": updated_participants, "redirect": url_for('summary.summary')})
