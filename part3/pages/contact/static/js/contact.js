@@ -1,33 +1,31 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector("form");
+    document.querySelector(".contact-form").addEventListener("submit", async function (event) {
+        event.preventDefault(); // מניעת רענון העמוד כברירת מחדל
 
-    if (form) {
-        form.addEventListener("submit", function (event) {
-            let isValid = true;
+        let formData = {
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            phone: document.getElementById("phone").value,
+            message: document.getElementById("message").value
+        };
 
-            // איפוס הודעות שגיאה קודמות
-            document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
+        try {
+            let response = await fetch("/contact/submit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            });
 
-            const emailInput = document.getElementById("email");
-            const phoneInput = document.getElementById("phone");
-
-            // בדיקת מייל
-            if (!emailInput.value.includes("@") || !emailInput.value.includes(".")) {
-                isValid = false;
-                const error = emailInput.nextElementSibling;
-                error.textContent = "Please enter a valid email address.";
+            let result = await response.json();
+            if (result.success) {
+                alert("Your message has been sent successfully!");
+                document.querySelector(".contact-form").reset();
+            } else {
+                alert("Error: " + result.error);
             }
-
-            // בדיקת טלפון
-            if (!/^\d{10}$/.test(phoneInput.value)) {
-                isValid = false;
-                const error = phoneInput.nextElementSibling;
-                error.textContent = "The phone number must be exactly 10 digits long.";
-            }
-
-            if (!isValid) {
-                event.preventDefault();
-            }
-        });
-    }
+        } catch (error) {
+            console.error("Error submitting form:", error);
+            alert("Something went wrong. Please try again.");
+        }
+    });
 });

@@ -24,3 +24,9 @@ db = client[DATABASE_NAME]  # בחירת מסד הנתונים
 # בדיקה אם קיימת קולקציה ל- `workshop_registrations`, אם לא - יוצרת אותה
 if "workshop_registrations" not in db.list_collection_names():
     db.create_collection("workshop_registrations")
+
+# יצירת קולקציה חדשה לפניות מהמשתמשים אם היא לא קיימת
+if "contact_forms" not in db.list_collection_names():
+    db.create_collection("contact_forms")
+
+contact_collection = db["contact_forms"]
