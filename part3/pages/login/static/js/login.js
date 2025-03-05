@@ -5,33 +5,42 @@ document.addEventListener("DOMContentLoaded", function () {
     form.addEventListener("submit", async function (event) {
         event.preventDefault(); // מונע טעינה מחדש של הדף
 
-        const formData = new FormData(form);
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        if (!email || !password) {
+            displayMessage("All fields are required!", "error");
+            return;
+        }
 
         try {
-            const response = await fetch("/login/login", {  // שינוי הנתיב כדי להתאים ל-Flask
+            const response = await fetch("/login/login", {  // וודא שהנתיב נכון!
                 method: "POST",
-                body: formData,
+                headers: {
+                    "Content-Type": "application/json"  // 📌 חשוב! מוודא שהבקשה היא JSON
+                },
+                body: JSON.stringify({ email, password })  // 📌 הופך את הנתונים ל- JSON
             });
 
-
             const result = await response.json();
-
-            // ננקה קודם את ההודעות הישנות
-            flashMessageContainer.innerHTML = "";
+            console.log("🔹 Server response:", result);  // 🔍 נבדוק מה השרת מחזיר
 
             if (result.success) {
-                // אם ההתחברות הצליחה, מפנה לדף הבית
-                window.location.href = "/";
+                window.location.href = result.redirect || "/workshops/";
             } else {
-                // אחרת, נציג הודעת שגיאה מהשרת
-                const errorMessage = document.createElement("li");
-                errorMessage.classList.add(result.success ? "success" : "error");
-                errorMessage.textContent = result.message;
-                flashMessageContainer.appendChild(errorMessage);
+                displayMessage(result.message, "error");
             }
         } catch (error) {
             console.error("Error during login:", error);
-            flashMessageContainer.innerHTML = `<li class="error">An unexpected error occurred. Please try again.</li>`;
+            displayMessage("An unexpected error occurred. Please try again.", "error");
         }
     });
+
+    function displayMessage(message, type) {
+        flashMessageContainer.innerHTML = "";
+        const errorMessage = document.createElement("li");
+        errorMessage.classList.add(type);
+        errorMessage.textContent = message;
+        flashMessageContainer.appendChild(errorMessage);
+    }
 });

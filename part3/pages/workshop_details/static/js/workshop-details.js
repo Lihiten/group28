@@ -87,18 +87,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Check if user is logged in before registration
 function checkLoginStatus(callback) {
-    fetch("/auth/check_login_status")
+    fetch("/login/login/auth/check_login_status")
         .then(response => response.json())
         .then(data => {
             if (!data.logged_in) {
                 alert("You must be logged in to register for a workshop!");
-                window.location.href = "/login/login";
+                window.location.href = "/login/login";  // מפנה לדף הנכון לפי Flask
             } else {
                 callback();
             }
         })
         .catch(error => console.error("Error:", error));
 }
+
 
 // Register for the workshop
 function registerWorkshop(workshop, date, time, participants) {

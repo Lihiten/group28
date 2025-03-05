@@ -13,11 +13,14 @@ workshop_details = Blueprint('workshop_details', __name__, template_folder='temp
 def workshop_details_page(type):
     return render_template('workshop_details.html', type=type)
 
-
 @workshop_details.route('/register_workshop', methods=['POST'])
 def register_workshop():
     if "user" not in session:
-        return jsonify({"success": False, "message": "You must be logged in to register for a workshop."}), 403
+        if request.is_json:  # אם זו בקשת AJAX
+            return jsonify({"success": False, "message": "You must be logged in to register for a workshop."}), 403
+        else:
+            flash("You must be logged in to register for a workshop!", "error")
+            return redirect(url_for("login.login"))  # מפנה לדף ההתחברות
 
     data = request.json
     workshop = data.get("workshop")
@@ -58,4 +61,5 @@ def register_workshop():
         })
         updated_participants = participants
 
+    # לאחר הרשמה מוצלחת – הפניה אוטומטית לעמוד SUMMARY
     return jsonify({"success": True, "participants": updated_participants, "redirect": url_for('summary.summary')})
